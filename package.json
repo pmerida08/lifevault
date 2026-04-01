@@ -1,0 +1,14 @@
+{
+  "name": "lifevault",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/backend",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:backend": "npm run dev --workspace=apps/backend",
+    "dev:mobile": "cd apps/mobile && npx expo start",
+    "build:backend": "npm run build --workspace=apps/backend"
+  }
+}

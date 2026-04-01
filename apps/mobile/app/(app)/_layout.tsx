@@ -1,19 +1,19 @@
 import { Tabs, Redirect } from 'expo-router';
 import { View } from 'react-native';
-import { Home, Archive, Sparkles, CalendarDays, UserCircle } from 'lucide-react-native';
+import { Archive, Bot, CalendarDays } from 'lucide-react-native';
 import { useAuthStore } from '../../store/auth.store';
 import { useTheme } from '../../hooks/useTheme';
 
 const TABS = [
-  { name: 'index',     Icon: Home,         label: 'Inicio'  },
-  { name: 'vault',     Icon: Archive,      label: 'Bóveda'  },
-  { name: 'assistant', Icon: Sparkles,     label: 'IA'      },
-  { name: 'planner',   Icon: CalendarDays, label: 'Planner' },
-  { name: 'settings',  Icon: UserCircle,   label: 'Perfil'  },
+  { name: 'index',     Icon: Archive,      label: 'Documentos' },
+  { name: 'assistant', Icon: Bot,          label: 'Chatbot'    },
+  { name: 'planner',   Icon: CalendarDays, label: 'Planner'    },
 ];
 
 function TabIcon({
-  focused, Icon, t,
+  focused,
+  Icon,
+  t,
 }: {
   focused: boolean;
   Icon: React.ComponentType<{ size: number; color: string; strokeWidth: number }>;
@@ -21,15 +21,11 @@ function TabIcon({
 }) {
   return (
     <View style={{
-      width: 52, height: 34, borderRadius: 17,
+      width: 56, height: 34, borderRadius: 17,
       backgroundColor: focused ? t.primaryContainer : 'transparent',
       alignItems: 'center', justifyContent: 'center',
     }}>
-      <Icon
-        size={22}
-        color={focused ? t.primary : t.textSubtle}
-        strokeWidth={focused ? 2.2 : 1.8}
-      />
+      <Icon size={22} color={focused ? t.primary : t.textSubtle} strokeWidth={focused ? 2.2 : 1.8} />
     </View>
   );
 }
@@ -60,17 +56,17 @@ export default function AppLayout() {
         tabBarShowLabel: false,
       }}
     >
-      {TABS.map(({ name, Icon, label }) => (
+      {TABS.map(({ name, Icon }) => (
         <Tabs.Screen
           key={name}
           name={name}
           options={{
-            tabBarIcon: ({ focused }) => (
-              <TabIcon focused={focused} Icon={Icon} t={t} />
-            ),
+            tabBarIcon: ({ focused }) => <TabIcon focused={focused} Icon={Icon} t={t} />,
           }}
         />
       ))}
+      {/* Settings fuera del tab bar visible */}
+      <Tabs.Screen name="settings" options={{ href: null }} />
     </Tabs>
   );
 }

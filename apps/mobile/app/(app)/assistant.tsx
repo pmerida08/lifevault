@@ -4,7 +4,8 @@ import {
   FlatList, KeyboardAvoidingView, Platform, ActivityIndicator, Alert,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Sparkles, Trash2, SendHorizonal, Bot } from 'lucide-react-native';
+import { Sparkles, Trash2, SendHorizonal, Bot, Settings } from 'lucide-react-native';
+import { router } from 'expo-router';
 import { useAssistantStore } from '../../store/assistant.store';
 import { useTheme } from '../../hooks/useTheme';
 import type { AIAction } from '@lifevault/shared';
@@ -103,19 +104,27 @@ export default function AssistantScreen() {
           </Text>
           <Text style={{ fontSize: 30, fontWeight: '800', color: t.text, letterSpacing: -0.6 }}>IA Personal</Text>
         </View>
-        {messages.length > 0 && (
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          {messages.length > 0 && (
+            <TouchableOpacity
+              onPress={handleClear}
+              style={{
+                backgroundColor: t.surface, borderRadius: 12,
+                paddingHorizontal: 12, paddingVertical: 8,
+                flexDirection: 'row', alignItems: 'center', gap: 6,
+              }}
+            >
+              <Trash2 size={14} color={t.textMuted} strokeWidth={1.8} />
+              <Text style={{ fontSize: 14, color: t.textMuted, fontWeight: '600' }}>Limpiar</Text>
+            </TouchableOpacity>
+          )}
           <TouchableOpacity
-            onPress={handleClear}
-            style={{
-              backgroundColor: t.surface, borderRadius: 12,
-              paddingHorizontal: 12, paddingVertical: 8,
-              flexDirection: 'row', alignItems: 'center', gap: 6,
-            }}
+            onPress={() => router.push('/(app)/settings' as never)}
+            style={{ width: 42, height: 42, borderRadius: 14, backgroundColor: t.surface, alignItems: 'center', justifyContent: 'center' }}
           >
-            <Trash2 size={14} color={t.textMuted} strokeWidth={1.8} />
-            <Text style={{ fontSize: 14, color: t.textMuted, fontWeight: '600' }}>Limpiar</Text>
+            <Settings size={20} color={t.textMuted} strokeWidth={1.8} />
           </TouchableOpacity>
-        )}
+        </View>
       </View>
 
       {/* Messages */}

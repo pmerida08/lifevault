@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, TextInput, Modal, Alert, RefreshControl } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Plus, CheckCircle2, Circle, Trash2, CalendarDays } from 'lucide-react-native';
+import { Plus, CheckCircle2, Circle, Trash2, CalendarDays, Settings } from 'lucide-react-native';
+import { router } from 'expo-router';
 import { useTasksStore } from '../../store/tasks.store';
 import { useTheme } from '../../hooks/useTheme';
 import type { Task } from '@lifevault/shared';
@@ -116,17 +117,25 @@ export default function PlannerScreen() {
             </Text>
             <Text style={{ fontSize: 30, fontWeight: '800', color: t.text, letterSpacing: -0.6 }}>Planner</Text>
           </View>
-          <TouchableOpacity
-            onPress={() => setShowModal(true)}
-            style={{
-              backgroundColor: t.primary, borderRadius: 16,
-              paddingHorizontal: 16, paddingVertical: 11,
-              flexDirection: 'row', alignItems: 'center', gap: 7,
-            }}
-          >
-            <Plus size={18} color="#ffffff" strokeWidth={2.5} />
-            <Text style={{ color: '#ffffff', fontSize: 15, fontWeight: '700' }}>Tarea</Text>
-          </TouchableOpacity>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+            <TouchableOpacity
+              onPress={() => setShowModal(true)}
+              style={{
+                backgroundColor: t.primary, borderRadius: 16,
+                paddingHorizontal: 16, paddingVertical: 11,
+                flexDirection: 'row', alignItems: 'center', gap: 7,
+              }}
+            >
+              <Plus size={18} color="#ffffff" strokeWidth={2.5} />
+              <Text style={{ color: '#ffffff', fontSize: 15, fontWeight: '700' }}>Tarea</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => router.push('/(app)/settings' as never)}
+              style={{ width: 42, height: 42, borderRadius: 14, backgroundColor: t.surface, alignItems: 'center', justifyContent: 'center' }}
+            >
+              <Settings size={20} color={t.textMuted} strokeWidth={1.8} />
+            </TouchableOpacity>
+          </View>
         </View>
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal: -4 }}>

@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useColorScheme } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useAuthStore } from '../store/auth.store';
 import '../global.css';
 
@@ -13,7 +14,7 @@ export default function RootLayout() {
   useEffect(() => { hydrate(); }, []);
 
   return (
-    <>
+    <SafeAreaProvider>
       <StatusBar style={isDark ? 'light' : 'dark'} />
       <Stack
         screenOptions={{
@@ -24,6 +25,6 @@ export default function RootLayout() {
         <Stack.Screen name="(auth)" />
         <Stack.Screen name="(app)" />
       </Stack>
-    </>
+    </SafeAreaProvider>
   );
 }

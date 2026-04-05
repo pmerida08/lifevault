@@ -1,0 +1,28 @@
+{
+  "cli": {
+    "version": ">= 16.0.0",
+    "appVersionSource": "local"
+  },
+  "build": {
+    "preview": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_N8N_WEBHOOK_URL": "https://n8n-pmv-playground.up.railway.app/webhook/lifevault-chatbot"
+      }
+    },
+    "production": {
+      "android": {
+        "buildType": "app-bundle"
+      },
+      "env": {
+        "EXPO_PUBLIC_N8N_WEBHOOK_URL": "https://n8n-pmv-playground.up.railway.app/webhook/lifevault-chatbot"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

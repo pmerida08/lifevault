@@ -8,7 +8,7 @@ import { Sparkles, Trash2, SendHorizonal, Bot, Settings, RefreshCw, Download, Fi
 import { router } from 'expo-router';
 import { useAssistantStore } from '../../store/assistant.store';
 import { useTheme } from '../../hooks/useTheme';
-import { api } from '../../lib/api';
+import { useVaultStore } from '../../store/vault.store';
 import type { AIAction } from '@lifevault/shared';
 
 const SUGGESTIONS = [
@@ -69,12 +69,13 @@ function AttachmentCard({
   id, title, t,
 }: { id: string; title: string; t: ReturnType<typeof useTheme> }) {
   const [loading, setLoading] = useState(false);
+  const getDownloadUrl = useVaultStore((s) => s.getDownloadUrl);
 
   async function handleDownload() {
     setLoading(true);
     try {
-      const res = await api.get<{ url: string }>(`/documents/${id}/download`);
-      await Linking.openURL(res.url);
+      const url = await getDownloadUrl(Number(id));
+      await Linking.openURL(url);
     } catch {
       Alert.alert('Error', 'No se pudo obtener el enlace de descarga.');
     } finally {

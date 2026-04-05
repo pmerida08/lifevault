@@ -1,5 +1,5 @@
 import { Tabs, Redirect } from 'expo-router';
-import { View } from 'react-native';
+import { View, ActivityIndicator } from 'react-native';
 import { Archive, Bot, CalendarDays } from 'lucide-react-native';
 import { useAuthStore } from '../../store/auth.store';
 import { useTheme } from '../../hooks/useTheme';
@@ -35,7 +35,14 @@ export default function AppLayout() {
   const isLoading = useAuthStore((s) => s.isLoading);
   const t         = useTheme();
 
-  if (!isLoading && !user) return <Redirect href="/(auth)/login" />;
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#0f0e17' }}>
+        <ActivityIndicator color="#4d44e3" size="large" />
+      </View>
+    );
+  }
+  if (!user) return <Redirect href="/(auth)/login" />;
 
   return (
     <Tabs

@@ -1,6 +1,9 @@
 import { create } from 'zustand';
-import { api } from '../lib/api';
+import { supabase } from '../lib/supabase';
 import type { AIQueryResponse } from '@lifevault/shared';
+
+const N8N_WEBHOOK_URL = process.env.EXPO_PUBLIC_N8N_WEBHOOK_URL
+  ?? 'https://n8n-pmv-playground.up.railway.app/webhook/lifevault-chatbot';
 
 function generateSessionId(): string {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
@@ -23,7 +26,7 @@ interface AssistantState {
   isLoading: boolean;
   sessionId: string;
   sendMessage: (text: string) => Promise<void>;
-  clearHistory: () => Promise<void>;
+  clearHistory: () => void;
   reloadSession: () => void;
 }
 
@@ -33,6 +36,8 @@ export const useAssistantStore = create<AssistantState>((set, get) => ({
   sessionId: generateSessionId(),
 
   sendMessage: async (text) => {
+    const { data: { user } } = await supabase.auth.getUser();
+
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
@@ -43,11 +48,31 @@ export const useAssistantStore = create<AssistantState>((set, get) => ({
     set((state) => ({ messages: [...state.messages, userMessage], isLoading: true }));
 
     try {
-      const response = await api.post<AIQueryResponse>('/assistant/query', {
-        message: text,
-        session_id: get().sessionId,
-        context: { include_tasks: true, include_events: true },
+      const res = await fetch(N8N_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id:    user?.id ?? '',
+          message:    text,
+          session_id: get().sessionId,
+        }),
       });
+
+      if (!res.ok) throw new Error(`Error ${res.status}`);
+
+      const raw = await res.text();
+      let response: AIQueryResponse;
+
+      try {
+        const parsed = JSON.parse(raw);
+        response = {
+          message:     parsed.message ?? raw,
+          actions:     Array.isArray(parsed.actions)     ? parsed.actions     : [],
+          attachments: Array.isArray(parsed.attachments) ? parsed.attachments : [],
+        };
+      } catch {
+        response = { message: raw, actions: [], attachments: [] };
+      }
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -58,7 +83,7 @@ export const useAssistantStore = create<AssistantState>((set, get) => ({
       };
 
       set((state) => ({ messages: [...state.messages, assistantMessage] }));
-    } catch (err) {
+    } catch {
       const errMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
@@ -71,8 +96,7 @@ export const useAssistantStore = create<AssistantState>((set, get) => ({
     }
   },
 
-  clearHistory: async () => {
-    await api.delete('/assistant/history');
+  clearHistory: () => {
     set({ messages: [] });
   },
 

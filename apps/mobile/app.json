@@ -4,7 +4,7 @@
     "slug": "lifevault",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/Lifevault.png",
     "scheme": "lifevault",
     "userInterfaceStyle": "automatic",
     "splash": {
@@ -18,8 +18,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#0f0e1a"
+        "foregroundImage": "./assets/Lifevault.png",
+        "backgroundColor": "#4d44e3"
       },
       "package": "app.lifevault.mobile"
     },
@@ -33,11 +33,21 @@
       "expo-font",
       [
         "expo-document-picker",
-        { "iCloudContainerEnvironment": "Production" }
+        {
+          "iCloudContainerEnvironment": "Production"
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "newArchEnabled": false,
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "92fceeed-fce2-4b4a-85c9-9c1087e4a531"
+      }
+    },
+    "owner": "pmerida"
   }
 }

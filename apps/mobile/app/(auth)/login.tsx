@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator, Image } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Mail, Lock, ShieldCheck } from 'lucide-react-native';
+import { Mail, Lock } from 'lucide-react-native';
 import { Link, router } from 'expo-router';
 import { useAuthStore } from '../../store/auth.store';
 import { useTheme } from '../../hooks/useTheme';
@@ -38,14 +38,13 @@ export default function LoginScreen() {
 
           {/* Logo */}
           <View style={{ alignItems: 'center', marginBottom: 48 }}>
-            <View style={{
-              width: 80, height: 80, borderRadius: 28, backgroundColor: t.primary,
-              alignItems: 'center', justifyContent: 'center', marginBottom: 20,
-              shadowColor: t.primary, shadowOffset: { width: 0, height: 8 },
-              shadowOpacity: 0.3, shadowRadius: 16, elevation: 8,
-            }}>
-              <ShieldCheck size={38} color="#ffffff" strokeWidth={1.8} />
-            </View>
+            <Image
+              source={require('../../assets/Lifevault.png')}
+              style={{
+                width: 96, height: 96, marginBottom: 20,
+              }}
+              resizeMode="contain"
+            />
             <Text style={{ fontSize: 32, fontWeight: '800', color: t.text, letterSpacing: -0.8 }}>LifeVault</Text>
             <Text style={{ fontSize: 16, color: t.textMuted, marginTop: 6 }}>Tu bóveda personal inteligente</Text>
           </View>

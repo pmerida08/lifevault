@@ -1,6 +1,16 @@
 import { create } from 'zustand';
-import { api } from '../lib/api';
-import type { Task } from '@lifevault/shared';
+import { supabase } from '../lib/supabase';
+
+interface Task {
+  id: string;
+  user_id: string;
+  title: string;
+  description?: string;
+  status: 'todo' | 'in_progress' | 'done';
+  priority: 'low' | 'medium' | 'high';
+  due_date?: string;
+  created_at: string;
+}
 
 interface TasksState {
   tasks: Task[];
@@ -18,9 +28,20 @@ export const useTasksStore = create<TasksState>((set) => ({
   fetchTasks: async (status) => {
     set({ isLoading: true });
     try {
-      const query = status ? `?status=${status}` : '';
-      const tasks = await api.get<Task[]>(`/tasks${query}`);
-      set({ tasks: Array.isArray(tasks) ? tasks : [] });
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No autenticado');
+
+      let query = supabase
+        .from('tasks')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (status) query = query.eq('status', status);
+
+      const { data, error } = await query;
+      if (error) throw error;
+      set({ tasks: data ?? [] });
     } catch {
       set({ tasks: [] });
     } finally {
@@ -29,19 +50,35 @@ export const useTasksStore = create<TasksState>((set) => ({
   },
 
   createTask: async (input) => {
-    const task = await api.post<Task>('/tasks', input);
-    set((state) => ({ tasks: [task, ...state.tasks] }));
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('No autenticado');
+
+    const { data, error } = await supabase
+      .from('tasks')
+      .insert({ ...input, user_id: user.id })
+      .select()
+      .single();
+
+    if (error) throw new Error(error.message);
+    set((state) => ({ tasks: [data, ...state.tasks] }));
   },
 
   updateTask: async (id, input) => {
-    const updated = await api.patch<Task>(`/tasks/${id}`, input);
+    const { data, error } = await supabase
+      .from('tasks')
+      .update(input)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw new Error(error.message);
     set((state) => ({
-      tasks: state.tasks.map((t) => (t.id === id ? updated : t)),
+      tasks: state.tasks.map((t) => (t.id === id ? data : t)),
     }));
   },
 
   deleteTask: async (id) => {
-    await api.delete(`/tasks/${id}`);
+    await supabase.from('tasks').delete().eq('id', id);
     set((state) => ({ tasks: state.tasks.filter((t) => t.id !== id) }));
   },
 }));

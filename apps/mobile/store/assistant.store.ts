@@ -2,6 +2,14 @@ import { create } from 'zustand';
 import { api } from '../lib/api';
 import type { AIQueryResponse } from '@lifevault/shared';
 
+function generateSessionId(): string {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
 interface Message {
   id: string;
   role: 'user' | 'assistant';
@@ -13,13 +21,16 @@ interface Message {
 interface AssistantState {
   messages: Message[];
   isLoading: boolean;
+  sessionId: string;
   sendMessage: (text: string) => Promise<void>;
   clearHistory: () => Promise<void>;
+  reloadSession: () => void;
 }
 
 export const useAssistantStore = create<AssistantState>((set, get) => ({
   messages: [],
   isLoading: false,
+  sessionId: generateSessionId(),
 
   sendMessage: async (text) => {
     const userMessage: Message = {
@@ -34,6 +45,7 @@ export const useAssistantStore = create<AssistantState>((set, get) => ({
     try {
       const response = await api.post<AIQueryResponse>('/assistant/query', {
         message: text,
+        session_id: get().sessionId,
         context: { include_tasks: true, include_events: true },
       });
 
@@ -62,5 +74,9 @@ export const useAssistantStore = create<AssistantState>((set, get) => ({
   clearHistory: async () => {
     await api.delete('/assistant/history');
     set({ messages: [] });
+  },
+
+  reloadSession: () => {
+    set({ messages: [], sessionId: generateSessionId() });
   },
 }));

@@ -71,7 +71,7 @@ export async function queryAssistant(
   ];
 
   const ai = getAIProvider();
-  const response = await ai.chat(messages);
+  const response = await ai.chat(messages, { userId, sessionId: input.session_id ?? userId });
 
   // Persist both messages
   await db.query(

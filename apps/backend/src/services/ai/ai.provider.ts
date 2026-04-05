@@ -5,8 +5,13 @@ export interface AIMessage {
   content: string;
 }
 
+export interface AIProviderContext {
+  userId?: string;
+  sessionId?: string;
+}
+
 export interface AIProvider {
-  chat(messages: AIMessage[]): Promise<AIQueryResponse>;
+  chat(messages: AIMessage[], context?: AIProviderContext): Promise<AIQueryResponse>;
 }
 
 export function parseAIResponse(raw: string): AIQueryResponse {

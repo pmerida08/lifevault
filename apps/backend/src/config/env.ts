@@ -18,10 +18,11 @@ const envSchema = z.object({
   S3_ACCESS_KEY_ID: z.string().min(1),
   S3_SECRET_ACCESS_KEY: z.string().min(1),
 
-  AI_PROVIDER: z.enum(['openai', 'claude', 'gemini']).default('openai'),
+  AI_PROVIDER: z.enum(['openai', 'claude', 'gemini', 'n8n']).default('openai'),
   OPENAI_API_KEY: z.string().optional(),
   ANTHROPIC_API_KEY: z.string().optional(),
   GEMINI_API_KEY: z.string().optional(),
+  N8N_WEBHOOK_URL: z.string().url().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);

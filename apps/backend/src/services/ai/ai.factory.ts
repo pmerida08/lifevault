@@ -6,7 +6,11 @@ let instance: AIProvider | null = null;
 export function getAIProvider(): AIProvider {
   if (instance) return instance;
 
-  if (env.AI_PROVIDER === 'claude') {
+  if (env.AI_PROVIDER === 'n8n') {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { N8nAdapter } = require('./n8n.adapter.js') as typeof import('./n8n.adapter.js');
+    instance = new N8nAdapter();
+  } else if (env.AI_PROVIDER === 'claude') {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { ClaudeAdapter } = require('./claude.adapter.js') as typeof import('./claude.adapter.js');
     instance = new ClaudeAdapter();

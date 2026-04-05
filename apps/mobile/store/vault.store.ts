@@ -27,7 +27,10 @@ export const useVaultStore = create<VaultState>((set, get) => ({
 
     try {
       const docs = await api.get<Document[]>(`/documents${query}`);
-      set({ documents: Array.isArray(docs) ? docs : [] });
+      const unique = Array.isArray(docs)
+        ? [...new Map(docs.map(d => [d.document_id ?? d.id, d])).values()]
+        : [];
+      set({ documents: unique });
     } catch {
       set({ documents: [] });
     } finally {
@@ -38,7 +41,7 @@ export const useVaultStore = create<VaultState>((set, get) => ({
   deleteDocument: async (id) => {
     await api.delete(`/documents/${id}`);
     set((state) => ({
-      documents: state.documents.filter((d) => d.id !== id),
+      documents: state.documents.filter((d) => d.document_id !== id),
       total: state.total - 1,
     }));
   },

@@ -22,12 +22,12 @@ export async function listDocuments(
   }
 
   const where = conditions.join(' AND ');
-  const countResult = await db.query(`SELECT COUNT(*) FROM documents WHERE ${where}`, params);
+  const countResult = await db.query(`SELECT COUNT(*) FROM document_summaries WHERE ${where}`, params);
   const total = parseInt(countResult.rows[0].count, 10);
 
   params.push(query.limit, offset);
   const result = await db.query<Document>(
-    `SELECT * FROM documents WHERE ${where} ORDER BY created_at DESC LIMIT $${idx} OFFSET $${idx + 1}`,
+    `SELECT * FROM document_summaries WHERE ${where} ORDER BY created_at DESC LIMIT $${idx} OFFSET $${idx + 1}`,
     params
   );
 
@@ -80,10 +80,10 @@ export async function updateDocument(
   return result.rows[0] ?? null;
 }
 
-export async function deleteDocument(id: string, userId: string): Promise<boolean> {
+export async function deleteDocument(documentId: string, userId: string): Promise<boolean> {
   const result = await db.query(
-    'DELETE FROM documents WHERE id = $1 AND user_id = $2',
-    [id, userId]
+    'DELETE FROM documents WHERE document_id = $1 AND user_id = $2',
+    [documentId, userId]
   );
   return (result.rowCount ?? 0) > 0;
 }
